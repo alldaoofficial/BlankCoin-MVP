@@ -3,137 +3,77 @@
 <head>
     <title>BLANK - Stay White</title>
     <style>
-        body {
-            margin: 0;
-            background: white;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Arial', sans-serif;
-            cursor: none;
-            overflow: hidden; /* Verhindert Scrollen außerhalb */
-        }
-        
-        #score {
-            font-size: 15vw;
-            color: #000;
-            user-select: none;
-            transition: all 0.3s;
-            pointer-events: none; /* Ignoriert Mausereignisse auf der Anzeige */
-        }
+        /* Vorherige Styles bleiben gleich */
 
-        #highscore {
-            position: absolute;
-            top: 20px;
-            font-size: 2em;
-            color: #666;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .reset-effect {
-            animation: shake 0.5s;
-            color: #ff4444 !important;
-        }
-
-        /* Unsichtbarer Rand-Überwachungsbereich */
-        #border-guard {
+        /* Neue Token-Info Animation */
+        .token-info {
             position: fixed;
-            background: transparent;
-            z-index: 9999;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+            opacity: 0;
+            animation: slideIn 8s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        #border-guard.top { top: 0; left: 0; right: 0; height: 1px; }
-        #border-guard.bottom { bottom: 0; left: 0; right: 0; height: 1px; }
-        #border-guard.left { top: 0; left: 0; width: 1px; bottom: 0; }
-        #border-guard.right { top: 0; right: 0; width: 1px; bottom: 0; }
+
+        @keyframes slideIn {
+            0% { top: -100px; opacity: 0; }
+            15% { top: 40px; opacity: 1; }
+            85% { top: 40px; opacity: 1; }
+            100% { top: 180px; opacity: 0; }
+        }
+
+        .token-info span {
+            display: block;
+            text-align: center;
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+
+        .token-info .highlight {
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
     </style>
 </head>
 <body>
-    <!-- Unsichtbare Rand-Überwachung -->
-    <div id="border-guard" class="top"></div>
-    <div id="border-guard" class="bottom"></div>
-    <div id="border-guard" class="left"></div>
-    <div id="border-guard" class="right"></div>
+    <!-- Vorherige Elemente bleiben -->
 
-    <div id="highscore">Highscore: 0</div>
-    <div id="score">0</div>
+    <!-- Token-Info Overlay -->
+    <div class="token-info">
+        <span>🚀 Launch: <a href="https://pump.fun" target="_blank" style="color:#3498db;text-decoration:none">pump.fun</a></span>
+        <span>💰 Supply: <span class="highlight">1,000,000,000</span></span>
+        <span>🔒 Dev: <span class="highlight">2%</span> (permanent locked)</span>
+    </div>
 
-    <audio id="sound">
-        <source src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YUcK8D8AAAAA" type="audio/wav">
-    </audio>
+    <!-- Vorheriger JavaScript-Code bleibt -->
 
     <script>
-        let score = 0;
-        let highscore = localStorage.getItem('blankHighscore') || 0;
-        let timer;
-        const sound = document.getElementById('sound');
-        const mousePosition = { x: 0, y: 0 };
+        // Neue Info-Animation
+        const infoElements = document.querySelectorAll('.token-info');
+        let currentInfo = 0;
 
-        document.getElementById('highscore').textContent = `Highscore: ${highscore}`;
-
-        // Präzise Mauspositions-Überwachung
-        document.addEventListener('mousemove', (e) => {
-            mousePosition.x = e.clientX;
-            mousePosition.y = e.clientY;
-        });
-
-        const isMouseOut = () => {
-            return (
-                mousePosition.x <= 0 ||
-                mousePosition.y <= 0 ||
-                mousePosition.x >= window.innerWidth - 1 ||
-                mousePosition.y >= window.innerHeight - 1
-            );
-        };
-
-        const updateScore = () => {
-            if(isMouseOut()) {
-                resetScore();
-                return;
-            }
-            
-            score++;
-            document.getElementById('score').textContent = score;
-            
-            if(score > highscore) {
-                highscore = score;
-                localStorage.setItem('blankHighscore', highscore);
-                document.getElementById('highscore').textContent = `Highscore: ${highscore}`;
-            }
-        };
-
-        const resetScore = () => {
-            sound.currentTime = 0;
-            sound.play().catch(() => {});
-            
-            const scoreElement = document.getElementById('score');
-            scoreElement.classList.add('reset-effect');
-            setTimeout(() => scoreElement.classList.remove('reset-effect'), 500);
-
-            score = 0;
-            clearInterval(timer);
-            timer = setInterval(updateScore, 1000);
-        };
-
-        // Aktivitäts-Listener
-        ['mousemove', 'keydown', 'click', 'touchstart', 'wheel'].forEach(event => {
-            window.addEventListener(event, resetScore);
-        });
-
-        // Kontinuierliche Grenzüberprüfung
         setInterval(() => {
-            if(isMouseOut()) resetScore();
-        }, 100);
+            infoElements[currentInfo].style.animation = 'none';
+            void infoElements[currentInfo].offsetWidth; // Trigger Reflow
+            infoElements[currentInfo].style.animation = null;
+            
+            currentInfo = (currentInfo + 1) % infoElements.length;
+        }, 8000);
 
-        // Initialisierung
-        timer = setInterval(updateScore, 1000);
-        document.body.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+        // Mobile-Optimierung
+        window.addEventListener('resize', () => {
+            infoElements.forEach(info => {
+                info.style.fontSize = window.innerWidth < 600 ? '0.8em' : '1em';
+            });
+        });
     </script>
 </body>
 </html>
