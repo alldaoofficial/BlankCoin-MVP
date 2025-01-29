@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLANK - Do Nothing Challenge</title>
+    <style>
+        :root {
+            --primary-color: #000000;
+            --background: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            transition: background 1s ease;
+            cursor: none;
+        }
+
+        #score {
+            font-size: 8vw;
+            color: var(--primary-color);
+            position: relative;
+            text-shadow: 0 0 10px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+
+        #highscore {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5em;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .warning {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="score">0</div>
+    <div id="highscore">Highscore: 0</div>
+
+    <script>
+        let score = 0;
+        let highscore = localStorage.getItem('blankHighscore') || 0;
+        let timeoutId;
+        let mousePosition = [0, 0];
+        const sensitivity = 15; // Pixel tolerance
+        
+        // Initialisierung
+        document.getElementById('highscore').textContent = `Highscore: ${highscore}`;
+
+        // Aktivitätsüberwachung
+        const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 
+                              'touchstart', 'touchmove', 'wheel'];
+        
+        const handleActivity = (e) => {
+            // Anti-Check: Kleine Bewegungen ignorieren
+            if(e.type === 'mousemove') {
+                const deltaX = Math.abs(e.clientX - mousePosition[0]);
+                const deltaY = Math.abs(e.clientY - mousePosition[1]);
+                if(deltaX + deltaY < sensitivity) return;
+                
+                mousePosition = [e.clientX, e.clientY];
+            }
+
+            document.getElementById('score').classList.add('warning');
+            setTimeout(() => 
+                document.getElementById('score').classList.remove('warning'), 500);
+
+            score = 0;
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(updateScore, 1000);
+        };
+
+        activityEvents.forEach(event => 
+            window.addEventListener(event, handleActivity, { passive: true }));
+
+        // Score Update
+        const updateScore = () => {
+            score++;
+            document.getElementById('score').textContent = score;
+            
+            if(score > highscore) {
+                highscore = score;
+                localStorage.setItem('blankHighscore', highscore);
+                document.getElementById('highscore').textContent = 
+                    `Highscore: ${highscore}`;
+            }
+
+            // Progressive Difficulty
+            if(score === 30) {
+                document.body.style.background = 
+                    'linear-gradient(45deg, #f8f8f8, #ffffff)';
+            }
+            if(score === 60) {
+                document.documentElement.style.setProperty(
+                    '--primary-color', '#222222');
+            }
+            if(score === 100) {
+                document.body.style.background = 
+                    'linear-gradient(135deg, #f0f0f0, #ffffff)';
+            }
+
+            timeoutId = setTimeout(updateScore, 
+                1000 - Math.min(score, 50) * 15); // Geschwindigkeit erhöht sich
+        };
+
+        // Starte das Spiel
+        timeoutId = setTimeout(updateScore, 1000);
+
+        // Mobile Optimierung
+        document.body.addEventListener('touchmove', e => e.preventDefault(), 
+                                     { passive: false });
+    </script>
+</body>
+</html>
