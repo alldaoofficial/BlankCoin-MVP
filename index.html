@@ -174,22 +174,32 @@
         document.getElementById('highscore').textContent = `HIGHSCORE: ${highscore}`;
 
         // Aktivitätserkennung
-        const checkMovement = () => {
-            resetScore();
-        };
+        const checkActivity = () => resetScore();
+
+        // Tab-Wechsel-Erkennung
+        document.addEventListener('visibilitychange', () => {
+            if(document.visibilityState === 'hidden') resetScore();
+        });
+
+        // Maus verlässt Fenster
+        document.addEventListener('mouseout', (e) => {
+            if(!e.relatedTarget && e.clientY <= 0) resetScore();
+        });
 
         const resetScore = () => {
-            score = 0;
-            progressElement.style.width = '0%';
-            document.getElementById('score').textContent = score;
-            document.getElementById('score').classList.add('reset-effect');
-            setTimeout(() => document.getElementById('score').classList.remove('reset-effect'), 500);
-            
-            sound.currentTime = 0;
-            sound.play().catch(() => {});
-            
-            clearInterval(timer);
-            timer = setInterval(updateScore, 1000);
+            if(score > 0) {
+                score = 0;
+                progressElement.style.width = '0%';
+                document.getElementById('score').textContent = score;
+                document.getElementById('score').classList.add('reset-effect');
+                setTimeout(() => document.getElementById('score').classList.remove('reset-effect'), 500);
+                
+                sound.currentTime = 0;
+                sound.play().catch(() => {});
+                
+                clearInterval(timer);
+                timer = setInterval(updateScore, 1000);
+            }
         };
 
         const updateScore = () => {
@@ -218,10 +228,9 @@
 
         // Event Listener
         ['mousemove', 'touchmove', 'keydown', 'click', 'wheel'].forEach(event => {
-            window.addEventListener(event, checkMovement);
+            window.addEventListener(event, checkActivity);
         });
 
-        document.addEventListener('mouseleave', resetScore);
         document.body.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
 
         // Partikel-Hintergrund
