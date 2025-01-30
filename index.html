@@ -27,7 +27,6 @@
             position: relative;
         }
 
-        /* Hintergrund-Effekt */
         .particles {
             position: absolute;
             width: 100%;
@@ -73,17 +72,6 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .token-info:hover {
-            opacity: 1;
-            transform: translateX(-50%) scale(1.05);
-        }
-
-        .token-info a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: bold;
-        }
-
         .share-popup {
             position: fixed;
             bottom: -100px;
@@ -120,11 +108,6 @@
             gap: 8px;
         }
 
-        .share-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0,255,136,0.3);
-        }
-
         @keyframes resetPulse {
             0% { text-shadow: 0 0 15px rgba(255,0,68,0); }
             50% { text-shadow: 0 0 25px rgba(255,0,68,0.3); }
@@ -136,7 +119,6 @@
             color: #ff0044 !important;
         }
 
-        /* Progress Bar */
         .progress {
             position: fixed;
             top: 0;
@@ -184,57 +166,70 @@
         // Spielzustand
         let score = 0;
         let highscore = localStorage.getItem('blankHighscore') || 0;
-        let lastMouseX = 0;
-        let lastMouseY = 0;
         let timer;
-        const sensitivity = 5;
-        
-        // Elemente
-        const scoreElement = document.getElementById('score');
-        const highscoreElement = document.getElementById('highscore');
         const progressElement = document.getElementById('progress');
         const sound = document.getElementById('sound');
 
-        // Progress Bar Update
-        const updateProgress = () => {
-            progressElement.style.width = `${(score % 60) * 1.666}%`;
-        };
+        // Initialisierung
+        document.getElementById('highscore').textContent = `HIGHSCORE: ${highscore}`;
 
-        // Aktivitätserkennung (unverändert)
-        // ... [gleicher Code wie zuvor]
+        // Aktivitätserkennung
+        const checkMovement = () => {
+            resetScore();
+        };
 
         const resetScore = () => {
             score = 0;
-            scoreElement.textContent = score;
-            scoreElement.classList.add('reset-effect');
             progressElement.style.width = '0%';
-            // ... [restlicher Code]
+            document.getElementById('score').textContent = score;
+            document.getElementById('score').classList.add('reset-effect');
+            setTimeout(() => document.getElementById('score').classList.remove('reset-effect'), 500);
+            
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+            
+            clearInterval(timer);
+            timer = setInterval(updateScore, 1000);
         };
 
         const updateScore = () => {
             score++;
-            scoreElement.textContent = score;
-            updateProgress();
-            // ... [restlicher Code]
+            document.getElementById('score').textContent = score;
+            progressElement.style.width = `${(score % 60) * 1.666}%`;
+            
+            if(score > highscore) {
+                highscore = score;
+                localStorage.setItem('blankHighscore', highscore);
+                document.getElementById('highscore').textContent = `HIGHSCORE: ${highscore}`;
+                document.getElementById('sharePopup').classList.add('visible');
+            }
         };
 
-        // Share-Funktion (unverändert)
-        // ... [gleicher Code wie zuvor]
+        // Share-Funktion
+        const shareScore = () => {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(
+                `⏳ Ich habe ${highscore} Sekunden ABSOLUTE STILLE bei #BLANK erreicht!\n` +
+                `🚀 Token Launch: pump.fun\n` +
+                `👉 Challenge mich:`
+            );
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`);
+        };
 
         // Event Listener
-        // ... [gleicher Code wie zuvor]
+        ['mousemove', 'touchmove', 'keydown', 'click', 'wheel'].forEach(event => {
+            window.addEventListener(event, checkMovement);
+        });
 
-        // Initialisierung
-        highscoreElement.textContent = `HIGHSCORE: ${highscore}`;
-        timer = setInterval(updateScore, 1000);
+        document.addEventListener('mouseleave', resetScore);
+        document.body.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
 
-        // Hintergrund-Partikel
+        // Partikel-Hintergrund
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.classList.add('particles');
         document.body.prepend(canvas);
 
-        // Partikel Animation
         class Particle {
             constructor() {
                 this.reset();
@@ -257,7 +252,6 @@
             }
         }
 
-        // Canvas Setup
         function initParticles() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -274,6 +268,9 @@
 
         window.addEventListener('resize', initParticles);
         initParticles();
+
+        // Spielstart
+        timer = setInterval(updateScore, 1000);
     </script>
 </body>
 </html>
