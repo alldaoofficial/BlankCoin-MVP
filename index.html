@@ -1,79 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>BLANK - Stay White</title>
+    <title>BLANK - Meme Challenge</title>
     <style>
-        /* Vorherige Styles bleiben gleich */
+        /* Vorherige Styles bleiben */
 
-        /* Neue Token-Info Animation */
-        .token-info {
+        /* Share Popup */
+        .share-popup {
             position: fixed;
-            top: -100px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 30px;
-            border-radius: 50px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(5px);
-            font-family: 'Courier New', monospace;
-            white-space: nowrap;
-            opacity: 0;
-            animation: slideIn 8s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @keyframes slideIn {
-            0% { top: -100px; opacity: 0; }
-            15% { top: 40px; opacity: 1; }
-            85% { top: 40px; opacity: 1; }
-            100% { top: 180px; opacity: 0; }
-        }
-
-        .token-info span {
-            display: block;
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
             text-align: center;
-            font-size: 1.2em;
-            margin: 5px 0;
+            display: none;
+            backdrop-filter: blur(5px);
+            z-index: 999;
         }
 
-        .token-info .highlight {
-            color: #2ecc71;
-            font-weight: bold;
-            font-size: 1.3em;
+        .share-button {
+            background: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Courier New';
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px auto;
+        }
+
+        /* Meme Canvas */
+        #memeCanvas {
+            display: none;
+            max-width: 90%;
+            height: auto;
+            margin: 20px auto;
+            border-radius: 15px;
         }
     </style>
 </head>
 <body>
-    <!-- Vorherige Elemente bleiben -->
+    <!-- Vorherige Elemente -->
 
-    <!-- Token-Info Overlay -->
-    <div class="token-info">
-        <span>🚀 Launch: <a href="https://pump.fun" target="_blank" style="color:#3498db;text-decoration:none">pump.fun</a></span>
-        <span>💰 Supply: <span class="highlight">1,000,000,000</span></span>
-        <span>🔒 Dev: <span class="highlight">2%</span> (permanent locked)</span>
+    <!-- Share Popup -->
+    <div class="share-popup" id="sharePopup">
+        <p>🎉 Neuer Rekord! Teile deine Leistung:</p>
+        <button class="share-button" onclick="generateAndShareMeme()">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTkgMy4xYy0xLjEtLjUtMi4yLS4xLTMuMS41LS44LjUtMS4zIDEuMi0xLjYgMi0uMy44LS40IDEuNi0uNSAyLjQgMCAuMy0uMS43LS4yIDFMMTIgMTlsLTIuOS0xMS4xYy0uMS0uMy0uMS0uNi0uMi0xLS4xLS44LS4yLTEuNi0uNS0yLjQtLjMtLjgtLjgtMS41LTEuNi0yQzUuOCAyIDMuOCAyLjQgMi40IDMuOSAxIDUuNS44IDguMSAxLjEgMTAuN2MuMyAyLjYgMi4xIDUuNSA0LjcgNi44IDIuNiAxLjMgNi45IDEuNCAxMC4yLjEgMy4zLTEuMyA1LjktMy42IDYuOS02LjMgMS0yLjcuNC01LjktMS43LTguMXoiLz48L3N2Zz4=" width="20">
+            Auf Twitter teilen
+        </button>
     </div>
 
-    <!-- Vorheriger JavaScript-Code bleibt -->
-
     <script>
-        // Neue Info-Animation
-        const infoElements = document.querySelectorAll('.token-info');
-        let currentInfo = 0;
+        // Meme Template (Platzhalter - ersetzen Sie diese Base64 mit Ihrem eigenen Bild)
+        const MEME_TEMPLATE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACoCAMAAABt9SM9AAAAA1BMVEWZmf+zm1gZAAAAR0lEQVR4nO3BAQEAAACCIP+vbkhAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOA8Y8IAAAFjSURBVHja7cExAQAAAMKg9U9tCU+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4NxZWAAEbo74oAAAAAElFTkSuQmCC";
 
-        setInterval(() => {
-            infoElements[currentInfo].style.animation = 'none';
-            void infoElements[currentInfo].offsetWidth; // Trigger Reflow
-            infoElements[currentInfo].style.animation = null;
+        // Share-Funktionen
+        let currentHighscore = 0;
+
+        function showSharePopup() {
+            const popup = document.getElementById('sharePopup');
+            popup.style.display = 'block';
+            setTimeout(() => popup.style.display = 'none', 5000);
+        }
+
+        async function generateAndShareMeme() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
             
-            currentInfo = (currentInfo + 1) % infoElements.length;
-        }, 8000);
+            // Bild laden
+            const img = new Image();
+            img.src = MEME_TEMPLATE;
+            await new Promise(resolve => img.onload = resolve);
 
-        // Mobile-Optimierung
-        window.addEventListener('resize', () => {
-            infoElements.forEach(info => {
-                info.style.fontSize = window.innerWidth < 600 ? '0.8em' : '1em';
-            });
-        });
+            // Canvas einrichten
+            canvas.width = 1200;
+            canvas.height = 630; // Optimal für Social Media
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Text hinzufügen
+            ctx.font = 'bold 72px Impact';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            
+            // Oberer Text
+            ctx.fillText(`ICH WAR ${currentHighscore} SEKUNDEN`, canvas.width/2, 100);
+            
+            // Unterer Text
+            ctx.fillText('VOLLKOMMEN BLANK!', canvas.width/2, canvas.height - 50);
+
+            // Bild generieren
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            
+            // Teilen
+            const text = encodeURIComponent(
+                `Ich habe ${currentHighscore} Sekunden lang NICHTS gemacht! 🚀\nKannst du mich toppen? 👇\n${window.location.href}`
+            );
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(dataUrl)}`);
+        }
+
+        // Highscore Check
+        function checkForNewHighscore(newScore) {
+            if(newScore > currentHighscore) {
+                currentHighscore = newScore;
+                showSharePopup();
+            }
+        }
+
+        // Im bestehenden updateScore()
+        const updateScore = () => {
+            if(isMouseOut()) {
+                resetScore();
+                return;
+            }
+            
+            score++;
+            document.getElementById('score').textContent = score;
+            
+            if(score > highscore) {
+                highscore = score;
+                localStorage.setItem('blankHighscore', highscore);
+                document.getElementById('highscore').textContent = `Highscore: ${highscore}`;
+                checkForNewHighscore(highscore); // <-- Hier hinzufügen
+            }
+        };
     </script>
 </body>
 </html>
