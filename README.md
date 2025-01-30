@@ -1,6 +1,6 @@
 # 🕳️ BLANK • The Ultimate Zen Challenge
 
-![BLANK Screenshot](https://ibb.co/pvxqbLNh) <!-- Replace with actual screenshot -->
+![BLANK Screenshot](<a href="https://ibb.co/pvxqbLNh"><img src="https://i.ibb.co/27yJWkRZ/Screenshot-2025-01-30-112405.png" alt="Screenshot-2025-01-30-112405" border="0"></a>) <!-- Replace with actual screenshot -->
 
 ## 🚀 About the Game  
 BLANK is a counterintuitive digital meditation. The game challenges you to do **absolutely nothing** – no moving, no clicking, no scrolling. The longer you resist your impulses, the higher your score climbs. Accompanying this experience, the **$BLANK token** will soon launch on [pump.fun](https://pump.fun)!
