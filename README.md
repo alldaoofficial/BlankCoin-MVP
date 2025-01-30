@@ -12,7 +12,9 @@ BLANK is a counterintuitive digital meditation. The game challenges you to do **
 3. **Stay Focused!**  
    Tab-switching or window-minimizing triggers reset  
 4. **No Cheating!**  
-   Anti-cheat system detects window abandonment  
+   Anti-cheat system detects window abandonment
+     
+PLAY NOW -> https://alldaoofficial.github.io/BlankCoin-MVP/
 
 ## 💎 Token Details  
 | Detail          | Value              |
@@ -35,6 +37,4 @@ BLANK is a counterintuitive digital meditation. The game challenges you to do **
 - Frontend: HTML5/CSS3/JavaScript  
 - Hosting: GitHub Pages  
 - Blockchain Integration: Solana (planned)  
-- Design: Cyberpunk/Retro-Futurism
-
-PLAY NOW https://alldaoofficial.github.io/BlankCoin-MVP/ 
+- Design: Cyberpunk/Retro-Futurism 
