@@ -36,3 +36,5 @@ BLANK is a counterintuitive digital meditation. The game challenges you to do **
 - Hosting: GitHub Pages  
 - Blockchain Integration: Solana (planned)  
 - Design: Cyberpunk/Retro-Futurism
+
+PLAY NOW https://alldaoofficial.github.io/BlankCoin-MVP/ 
